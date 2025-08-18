@@ -114,5 +114,5 @@ function activateFirstTab(container = document) { // call on page load to activa
 //____________________________________________________________________________________________________________________________
 // Load templates once on page load
 
-await TemplateLoader.loadExternal('./dropdown/dropdown_templates.html'); //dropdown templates
-await TemplateLoader.loadExternal('./select/select_templates.html'); //select templates
+await TemplateLoader.loadExternal('./components/dropdown/dropdown_templates.html'); //dropdown templates
+await TemplateLoader.loadExternal('./components/select/select_templates.html'); //select templates
