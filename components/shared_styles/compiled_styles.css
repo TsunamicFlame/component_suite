@@ -1,5 +1,5 @@
 /* import icon fonts */
-@import url("./fonts/icon_fonts/feather_icon_font.css");
+@import url("/fonts/icon_fonts/feather_icon_font.css");
 
 /* import shared utility styling */
 @import url("./shared_styles.css");
