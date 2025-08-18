@@ -1,0 +1,12 @@
+/* import icon fonts */
+@import url("./fonts/icon_fonts/feather_icon_font.css");
+
+/* import shared utility styling */
+@import url("./shared_styles.css");
+@import url("./portal_styling.css");
+
+/* import individual component styling */
+@import url("../select/select_styling.css");
+@import url("../dropdown/dropdown_styling.css");
+@import url("../tabs/tabs_styling.css");
+

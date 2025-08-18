@@ -1,0 +1,22 @@
+:root {
+  --z-tooltips: 1000;
+  --z-toasts: 1100;
+  --z-dropdowns: 1200;
+  --z-dialogs: 2000;
+  --z-sidebars: 1500;
+}
+
+#ui_portal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.tooltips_portal { position: absolute; z-index: var(--z-tooltips); }
+.toasts_portal   { position: absolute; z-index: var(--z-toasts); }
+.dropdowns_portal { position: absolute; z-index: var(--z-dropdowns); }
+.dialogs_portal  { position: absolute; z-index: var(--z-dialogs); }
+.sidebars_portal { position: absolute; z-index: var(--z-sidebars); }

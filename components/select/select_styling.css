@@ -1,0 +1,101 @@
+/* make sure defaults are hidden */
+select { display: none; }
+
+/* Container */
+.select-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.375rem;
+    background: #fff;
+    cursor: pointer;
+    min-width: 200px;
+}
+.select-container[aria-expanded="true"] {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Input */
+.select-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    min-width: 2rem;
+    background: transparent;
+}
+
+/* Dropdown arrow */
+.select-arrow {
+    margin-left: auto;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #666;
+    pointer-events: none;
+}
+
+/* Chips for multi select */
+.select-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+.select-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #4a90e2;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+}
+.select-chip-remove {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+/* Menu */
+.select-menu {
+    position: absolute; /* for dropdown type */
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    min-width: 90%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Menu options */
+.select-option {
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+}
+.select-option:hover,
+.select-option.active {
+    background-color: #f0f6ff;
+}
+.select-option[aria-disabled="true"] {
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Groups */
+.select-group {
+    padding: 0.3rem 0.6rem;
+    font-weight: bold;
+    font-size: 0.8rem;
+    background-color: #f9f9f9;
+}

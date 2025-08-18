@@ -1,0 +1,124 @@
+/* - Tabs */
+/* -- General Tab Styles */
+.tab_bar {
+    display: flex;
+    width: var(--tab-bar-width);
+    flex-direction: var(--tab-bar-flex-direction);
+    border-radius: var(--tab-bar-border-radius);
+    background-color: var(--tab-bar-bg);
+    overflow: hidden;
+    .tab_button {
+        text-align: left;
+        border-radius: var(--tab-btn-border-radius);
+        --btn-text: var(--btn-light-text);
+        --btn-color: var(--btn-light);
+        --btn-border: var(--btn-light);
+        transition: 0.15s;
+    }
+    .tab_button:hover {
+        --btn-color: var(--btn-light-hover);
+        --btn-border: var(--btn-light-hover);
+        border-radius: var(--tab-btn-border-radius-hover);
+    }
+    .tab_button.active {
+        --btn-color: var(--btn-light-active);
+        --btn-border: var(--btn-light-active);
+        border-radius: var(--tab-btn-border-radius-active);
+    }
+}
+.tab_content {
+    display: none;
+    transition: 0.15s;
+}
+.tab_content.active {
+    display: block;
+    width: var(--tab-content-width);
+    border: 0.2rem solid var(--tab-border);
+    border-radius: var(--tab-content-border-radius);
+    padding: var(--padding-small);
+    background-color: var(--tab-bg);
+}
+/* -- Styling for specific tab containers */
+.tab_container-top {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .tab_bar {
+        --tab-bar-flex-direction: row;
+        --tab-bar-border-radius: var(--border-radius-medium) var(--border-radius-medium) 0 0;
+        --tab-bar-width: fit-content;
+        .tab_button { --tab-btn-border-radius: var(--border-radius-medium) var(--border-radius-medium) 0 0; }
+        .tab_button:hover { --tab-btn-border-radius-hover: var(--border-radius-medium) var(--border-radius-medium) 0 0; }
+        .tab_button.active { --tab-btn-border-radius-active: var(--border-radius-medium) var(--border-radius-medium) 0 0; }
+    }
+    .tab_content.active {
+        --tab-content-border-radius: 0 var(--border-radius-medium) var(--border-radius-medium) var(--border-radius-medium);
+        --tab-content-width: calc(100% - 2.13rem);
+    }
+}
+.tab_container-sidebar.left {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    .tab_bar {
+        --tab-bar-flex-direction: column;
+        --tab-bar-border-radius: var(--border-radius-medium) 0 0 var(--border-radius-medium);
+        --tab-bar-width: clamp(10rem, 20vw, 15rem);
+        .tab_button { --tab-btn-border-radius: var(--border-radius-medium) 0 0 var(--border-radius-medium); }
+        .tab_button:hover { --tab-btn-border-radius-hover: var(--border-radius-medium) 0 0 var(--border-radius-medium); }
+        .tab_button.active { --tab-btn-border-radius-active: var(--border-radius-medium) 0 0 var(--border-radius-medium); }
+    }
+    .tab_content.active {
+        --tab-content-border-radius: 0 var(--border-radius-medium) var(--border-radius-medium) 0;
+        --tab-content-width: calc(100% - 2rem);
+    }
+}
+.tab_container-sidebar.right {
+    display: flex;
+    flex-direction: row-reverse;
+    overflow: hidden;
+    .tab_bar {
+        --tab-bar-flex-direction: column;
+        --tab-bar-border-radius: 0 var(--border-radius-medium) var(--border-radius-medium) 0;
+        --tab-bar-width: clamp(10rem, 20vw, 15rem);
+        .tab_button { --tab-btn-border-radius: 0 var(--border-radius-medium) var(--border-radius-medium) 0; }
+        .tab_button:hover { --tab-btn-border-radius-hover: 0 var(--border-radius-medium) var(--border-radius-medium) 0; }
+        .tab_button.active { --tab-btn-border-radius-active: 0 var(--border-radius-medium) var(--border-radius-medium) 0; }
+    }
+    .tab_content.active {
+        --tab-content-border-radius: var(--border-radius-medium) 0 0 var(--border-radius-medium);
+        --tab-content-width: calc(100% - 2rem);
+    }
+}
+/* -- sizing styles for tab containers */
+[class^="tab_container"].full-height {
+    height: 100%;
+    .tab_content {
+        overflow: auto;
+    }
+}
+/* -- "integrated" styling for tab containers */
+[class^="tab_container"].integrated {
+    .tab_bar {
+        background-color: transparent;
+        .tab_button {
+            --btn-color: transparent;
+            --btn-border: transparent;
+        }
+        .tab_button:hover {
+            --btn-color: hsl(from var(--btn-light-hover) h s l / 25%);
+            --btn-border: transparent;
+        }
+        .tab_button.active {
+            --btn-color: hsl(from var(--btn-light-active) h s l / 40%);
+            --btn-border: transparent;
+        }
+    }
+    .tab_content.active {
+        border: 0.2rem solid transparent;
+        background-color: hsl(from var(--tab-bg) h s l / 45%);
+    }
+}
+[class^="tab_container-top"].integrated { .tab_content.active { border-top: 0.2rem solid hsl(from var(--tab-border) h s l / 35%); }}
+[class^="tab_container-sidebar"].integrated.left { .tab_content.active { border-left: 0.2rem solid hsl(from var(--tab-border) h s l / 35%); }}
+[class^="tab_container-sidebar"].integrated.right { .tab_content.active { border-right: 0.2rem solid hsl(from var(--tab-border) h s l / 35%); }}
