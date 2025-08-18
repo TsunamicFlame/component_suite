@@ -50,14 +50,9 @@ select { display: none; }
     width: var(--padding-medium);
     height: var(--padding-medium);
 }
-select-pill-remove-icon::after {
-    content: var(--icon-x);
+select-pill-remove::before {
     font-family: var(--icon-font-family);
-    font-size: var(--font-size-large);
-    font-weight: 600;
-    position: absolute;
-    right: 0;
-    padding: none;
+    content: var(--icon-x);
 }
 
 /* Menu */
