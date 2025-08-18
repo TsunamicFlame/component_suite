@@ -177,15 +177,12 @@ export const SelectManager = (() => {
                 pill.textContent = option.label;
                 const remove = document.createElement("button");
                 remove.className = "select-pill-remove";
-                const removeIcon = document.createElement("span");
-                removeIcon.className = "select-pill-remove-icon";
                 remove.onclick = e => {
                     e.stopPropagation();
                     state.selected = state.selected.filter(o => o.value !== option.value);
                     syncToHiddenSelect(state);
                     renderContainer(state); // re-render to update UI
                 };
-                remove.appendChild(removeIcon);
                 pill.appendChild(remove);
                 input.appendChild(pill);
             });
