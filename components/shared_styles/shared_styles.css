@@ -404,9 +404,9 @@ within that element a specific way.
     --card-bg: hsl(from var(--background-color) h s calc(l - 10));
 
     /* - Tab Colors */
-    --tab-bar-bg: hsl(from var(--btn-secondary) h s l);
+    --tab-bar-bg: hsl(from var(--btn-light) h s l);
     --tab-bg: hsl(from var(--background-color) h s calc(l - 10));
-    --tab-border: hsl(from var(--btn-secondary-active) h s l);
+    --tab-border: hsl(from var(--btn-light-active) h s l);
     
     /* - Dropdown Colors */
     --dropdown-bg: hsl(from var(--background-color) h s calc(l - 12));
