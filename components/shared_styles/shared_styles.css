@@ -268,6 +268,16 @@ within that element a specific way.
     --menu-text-active: none;
     --menu-border-active: none;
 
+    /* - input colors (can be used for text inputs, selects, etc.) */
+    --input-bg: hsl(from var(--background-color) h s calc(l + 35));
+    --input-text: hsl(from var(--background-color) h s calc(l - 50));
+    --input-border-color: hsl(from var(--accent-color) h s calc(l + 35));
+    --input-border-color-active: hsl(from var(--primary-color) h s calc(l + 20));
+    --select-group-bg: hsl(from var(--accent-color) h s calc(l + 40));
+    --select-option-active: hsl(from var(--primary-color) h s calc(l + 40));
+    --select-option-border-color-active: hsl(from var(--primary-color) h s calc(l + 30));
+    
+
     /* Element Colors */
     /* - Card Colors */
     --card-bg: hsl(from var(--background-color) h s calc(l + 15));
@@ -398,6 +408,16 @@ within that element a specific way.
     --menu-bg-active: hsl(from var(--primary-color) h calc(s - 25) calc(l - 15));
     --menu-text-active: none;
     --menu-border-active: none;
+
+    /* - input colors (can be used for text inputs, selects, etc.) */
+    --input-bg: hsl(from var(--background-color) h s calc(l - 5));
+    --input-text: hsl(from var(--background-color) h s calc(l + 50));
+    --input-border-color: hsl(from var(--accent-color) h s calc(l + 5));
+    --input-border-color-active: hsl(from var(--primary-color) h s calc(l + 5));
+    --select-group-bg: hsl(from var(--accent-color) h s calc(l - 15));
+    --select-option-active: hsl(from var(--primary-color) h s calc(l - 15));
+    --select-option-border-color-active: hsl(from var(--primary-color) h s calc(l - 5));
+
 
     /* Element Colors */
     /* - Card Colors */

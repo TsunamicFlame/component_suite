@@ -1,8 +1,7 @@
 // imports
-import { DropdownManager } from "./dropdown/dropdown_manager.js";
-import { TemplateLoader } from './shared_utility/template_loader.js';
-import { SelectManager } from "./select/select_manager.js";
-import { TabsManager } from "./tabs/tabs_manager.js";
+import { DropdownManager } from "./components/dropdown/dropdown_manager.js";
+import { TemplateLoader } from './components/shared_utility/template_loader.js';
+import { SelectManager } from "./components/select/select_manager.js";
 
 
 
@@ -115,4 +114,4 @@ function activateFirstTab(container = document) { // call on page load to activa
 // Load templates once on page load
 
 await TemplateLoader.loadExternal('./components/dropdown/dropdown_templates.html'); //dropdown templates
-await TemplateLoader.loadExternal('./components/select/select_templates.html'); //select templates
+/* await TemplateLoader.loadExternal('./components/select/select_templates.html'); //select templates */

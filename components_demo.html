@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <!-- This is the icon font file -->
-    <link rel="stylesheet" href="../fonts/icon_fonts/feather_icon_font.css">
+    <link rel="stylesheet" href="./fonts/icon_fonts/feather_icon_font.css">
 
     <!-- This is the compiled styling file -->
-    <link rel="stylesheet" href="./shared_styles/compiled_styling.css">
+    <link rel="stylesheet" href="./components/shared_styles/compiled_styles.css">
 
     <!-- This is the JS file for the UI functions -->
-    <script type="module" src="./components_demo.js"></script>
+    <script type="module" src="./component_demo.js"></script>
 
     <!-- CDNs for supabase & OpenLayers -->
     
@@ -2231,24 +2231,84 @@
                 <details class="details_integrated" open>
                     <summary><h3>Selects</h3></summary>
                     <div class="container">
-                        <div class="select" data-select_id="foods" data-select_type="dropdown" data-select_mode="multi" data-select_filterable="true">
-                            <select id="foods" multiple>
-                                <optgroup label="Fruits">
-                                    <option value="apple">Apple</option>
-                                    <option value="banana">Banana</option>
-                                </optgroup>
-                                <optgroup label="Veggies">
-                                    <option value="carrot">Carrot</option>
-                                    <option value="spinach">Spinach</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="select" data-select_id="animals" data-select_type="flat" data-select_mode="single" data-select_filterable="false">
-                            <select id="animals">
-                                <option value="dog">Dog</option>
-                                <option value="cat">Cat</option>
-                                <option value="fish">Fish</option>
-                            </select>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2em;">
+                            <!-- Column headers -->
+                            <div><strong>Dropdown</strong></div>
+                            <div><strong>Flat</strong></div>
+                            <div><strong>Dropdown (Grouped)</strong></div>
+                            <div><strong>Flat (Grouped)</strong></div>
+
+                            <!-- No filter, single -->
+                            <div>
+                                <h4>Single, No Filter</h4>
+                                <div id="select-dropdown-single" data-select_type="dropdown" data-select_mode="single"></div>
+                            </div>
+                            <div>
+                                <h4>Single, No Filter</h4>
+                                <div id="select-flat-single" data-select_type="flat" data-select_mode="single"></div>
+                            </div>
+                            <div>
+                                <h4>Single, No Filter</h4>
+                                <div id="select-dropdown-single-group" data-select_type="dropdown" data-select_mode="single"></div>
+                            </div>
+                            <div>
+                                <h4>Single, No Filter</h4>
+                                <div id="select-flat-single-group" data-select_type="flat" data-select_mode="single"></div>
+                            </div>
+
+                            <!-- Filter, single -->
+                            <div>
+                                <h4>Single, Filter</h4>
+                                <div id="select-dropdown-single-filter" data-select_type="dropdown" data-select_mode="single" data-select_filterable="true"></div>
+                            </div>
+                            <div>
+                                <h4>Single, Filter</h4>
+                                <div id="select-flat-single-filter" data-select_type="flat" data-select_mode="single" data-select_filterable="true"></div>
+                            </div>
+                            <div>
+                                <h4>Single, Filter</h4>
+                                <div id="select-dropdown-single-group-filter" data-select_type="dropdown" data-select_mode="single" data-select_filterable="true"></div>
+                            </div>
+                            <div>
+                                <h4>Single, Filter</h4>
+                                <div id="select-flat-single-group-filter" data-select_type="flat" data-select_mode="single" data-select_filterable="true"></div>
+                            </div>
+
+                            <!-- No filter, multi -->
+                            <div>
+                                <h4>Multi, No Filter</h4>
+                                <div id="select-dropdown-multi" data-select_type="dropdown" data-select_mode="multi"></div>
+                            </div>
+                            <div>
+                                <h4>Multi, No Filter</h4>
+                                <div id="select-flat-multi" data-select_type="flat" data-select_mode="multi"></div>
+                            </div>
+                            <div>
+                                <h4>Multi, No Filter</h4>
+                                <div id="select-dropdown-multi-group" data-select_type="dropdown" data-select_mode="multi"></div>
+                            </div>
+                            <div>
+                                <h4>Multi, No Filter</h4>
+                                <div id="select-flat-multi-group" data-select_type="flat" data-select_mode="multi"></div>
+                            </div>
+
+                            <!-- Filter, multi -->
+                            <div>
+                                <h4>Multi, Filter</h4>
+                                <div id="select-dropdown-multi-filter" data-select_type="dropdown" data-select_mode="multi" data-select_filterable="true"></div>
+                            </div>
+                            <div>
+                                <h4>Multi, Filter</h4>
+                                <div id="select-flat-multi-filter" data-select_type="flat" data-select_mode="multi" data-select_filterable="true"></div>
+                            </div>
+                            <div>
+                                <h4>Multi, Filter</h4>
+                                <div id="select-dropdown-multi-group-filter" data-select_type="dropdown" data-select_mode="multi" data-select_filterable="true"></div>
+                            </div>
+                            <div>
+                                <h4>Multi, Filter</h4>
+                                <div id="select-flat-multi-group-filter" data-select_type="flat" data-select_mode="multi" data-select_filterable="true"></div>
+                            </div>
                         </div>
                     </div>
                 </details>
@@ -2307,5 +2367,47 @@
 <div id="ui_portal">
     <!-- Highest z-index first -->
 </div>
+
+
+
+
+<script type="module">
+// used for the select component matrix
+
+import { SelectManager } from './components/select/select_manager.js';
+
+// Example flat data
+const ungrouped = [
+  { value: 'a', label: 'Alpha' },
+  { value: 'b', label: 'Bravo' },
+  { value: 'c', label: 'Charlie' }
+];
+const grouped = [
+  { value: 'a', label: 'Alpha', group: "Group 1" },
+  { value: 'b', label: 'Bravo', group: "Group 1" },
+  { value: 'c', label: 'Charlie', group: "Group 2" },
+  { value: 'd', label: 'Delta', group: "Group 2" }
+];
+
+// Matrix: wire up all combos
+// No group
+SelectManager.initializeSelects(document.getElementById('select-dropdown-single'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-single'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-dropdown-single-filter'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-single-filter'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-dropdown-multi'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-multi'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-dropdown-multi-filter'), { options: ungrouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-multi-filter'), { options: ungrouped });
+// With group
+SelectManager.initializeSelects(document.getElementById('select-dropdown-single-group'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-single-group'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-dropdown-single-group-filter'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-single-group-filter'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-dropdown-multi-group'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-multi-group'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-dropdown-multi-group-filter'), { options: grouped });
+SelectManager.initializeSelects(document.getElementById('select-flat-multi-group-filter'), { options: grouped });
+</script>
 </body>
 </html>

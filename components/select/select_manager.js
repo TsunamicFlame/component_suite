@@ -99,7 +99,7 @@ export const SelectManager = (() => {
             options: options
         }));
     }
-
+/* old version
     function renderContainer(state) {
         // clear existing UI except native select
         Array.from(state.root.children).forEach(child => {
@@ -152,6 +152,103 @@ export const SelectManager = (() => {
         state.root.appendChild(container);
         state.containerElement = container;
         state.inputElement = input;
+    }
+ */
+    function renderContainer(state) {
+        //remove old container if exists
+        if (state.containerElement) {
+            state.containerElement.remove();
+        }
+
+        // container wraps the whole select UI
+        const container = document.createElement("div");
+        container.className = "select-container " + state.type; // "dropdown" | "flat"
+
+        // input area (show pills for multi, text for single)
+        const input = document.createElement("div");
+        input.className = "select-input";
+        input.tabIndex = 0; // make it focusable
+
+        // for multi, show pills for each selected option
+        if (state.mode === "multi") {
+            state.selected.forEach(option => {
+                const pill = document.createElement("span");
+                pill.className = "select-pill";
+                pill.textContent = option.label;
+                const remove = document.createElement("button");
+                remove.className = "select-pill-remove";
+                const removeIcon = document.createElement("span");
+                removeIcon.className = "select-pill-remove-icon";
+                remove.onclick = e => {
+                    e.stopPropagation();
+                    state.selected = state.selected.filter(o => o.value !== option.value);
+                    syncToHiddenSelect(state);
+                    renderContainer(state); // re-render to update UI
+                };
+                remove.appendChild(removeIcon);
+                pill.appendChild(remove);
+                input.appendChild(pill);
+            });
+        } else if (state.selected.length === 1) {
+            // single select, show the selected label
+            input.textContent = state.selected[0].label;
+        } else {
+            input.textContent = state.filterable ? "Select an option..." : "No selection";
+        }
+
+        // flat version renders the menu inline
+        if (state.type === "flat") {
+            const menu = document.createElement("div");
+            menu.className = "select-menu flat";
+            state.groupedOptions.forEach(group => {
+                if (group.label) {
+                    const groupLabel = document.createElement("div");
+                    groupLabel.className = "select-group-label";
+                    groupLabel.textContent = group.label;
+                    menu.appendChild(groupLabel);
+                }
+                group.options.forEach(option => {
+                    const optionDiv = document.createElement("div");
+                    optionDiv.className = "select-option";
+                    optionDiv.textContent = option.label;
+                    optionDiv.setAttribute("role", "option");
+                    if (option.disabled) {
+                        optionDiv.setAttribute("aria-disabled", "true");
+                        optionDiv.classList.add("disabled");
+                    }
+                    if (state.selected.some(o => o.value === option.value)) {
+                        optionDiv.classList.add("selected");
+                    }
+                    optionDiv.addEventListener("click", () => {
+                        if (option.disabled) return; // ignore disabled options
+                        if (state.mode === "multi") {
+                            //toggle selection
+                            if (state.selected.some(o => o.value === option.value)) {
+                                state.selected = state.selected.filter(o => o.value !== option.value);
+                            } else {
+                                state.selected.push(option);
+                            }
+                        } else {
+                            state.selected = [option]; // single select
+                        }
+                        syncToHiddenSelect(state);
+                        renderContainer(state); // re-render to update UI
+                    });
+                    menu.appendChild(optionDiv);
+                });
+            });
+            container.appendChild(menu);
+        }
+
+        //attach input and container
+        container.appendChild(input);
+        state.root.appendChild(container);
+
+        // store references
+        state.containerElement = container;
+        state.inputElement = input;
+        state.inputElement.setAttribute("role", "combobox");
+
     }
 
     function attachHandlers(state) {

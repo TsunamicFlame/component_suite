@@ -40,46 +40,7 @@ export const PositionUtility = (() => {
         let finalMode = mode;
         if (mode === "right" && !fitsRight && fitsLeft) finalMode = "left";
         else if (mode === "left" && !fitsLeft && fitsRight) finalMode = "right";
-
-        // For nested menus:
-        if (isNested) {
-            // Try to avoid overlap with ancestor dropdowns
-            let bestMode = finalMode;
-            let minOverlap = Infinity;
-            ["right", "left"].forEach(checkMode => {
-                // Skip if can't fit at all in this direction
-                if (checkMode === "right" && !fitsRight) return;
-                if (checkMode === "left" && !fitsLeft) return;
-
-                const trialLeft = checkMode === "right"
-                    ? triggerRect.right + window.scrollX
-                    : triggerRect.left - elementSize.width + window.scrollX;
-                const trialTop = options.alignToTriggerTop
-                    ? triggerRect.top + window.scrollY
-                    : triggerRect.bottom + window.scrollY;
-
-                const trialBox = {
-                    left: trialLeft,
-                    right: trialLeft + elementSize.width,
-                    top: trialTop,
-                    bottom: trialTop + elementSize.height
-                };
-
-                let overlapArea = 0;
-                ancestorRects.forEach(anc => {
-                    const dx = Math.max(0, Math.min(trialBox.right, anc.right) - Math.max(trialBox.left, anc.left));
-                    const dy = Math.max(0, Math.min(trialBox.bottom, anc.bottom) - Math.max(trialBox.top, anc.top));
-                    overlapArea += dx * dy;
-                });
-
-                if (overlapArea < minOverlap) {
-                    minOverlap = overlapArea;
-                    bestMode = checkMode;
-                }
-            });
-
-            finalMode = bestMode;
-        }
+        // if neither side fits, stick with preferred (overflow is prohibited later)
 
         // --- Step 2: Decide if we need to flip vertically ---
         const fitsDown = triggerRect.bottom + elementSize.height <= viewportHeight - margin;
