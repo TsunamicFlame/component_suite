@@ -18,41 +18,38 @@ select { display: none; }
     align-items: center;
     display: flex;
     flex-wrap: wrap;
+    gap: var(--padding-tiny);
 }
 
 /* Dropdown arrow */
-.select-arrow
+/* .select-arrow */
 
-/* Chips for multi select */
-.select-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-}
 .select-pill {
     display: inline-flex;
     align-items: center;
     background: var(--select-option-pill-color);
     color: var(--select-option-pill-text-color);
     font-size: var(--font-size-small);
-    padding: var(--padding-very-small) var(--padding-small);
+    padding: var(--padding-tiny) var(--padding-tiny) var(--padding-tiny) var(--padding-small);
     border-radius: var(--border-radius-circle);
 }
 .select-pill-remove {
     background: none;
     border: none;
-    color: var(--text-light);
     cursor: pointer;
     margin-left: var(--margin-small);
-    font-size: var(--font-size-large);
     overflow: visible;
-    padding: none;
-    width: var(--padding-medium);
-    height: var(--padding-medium);
+    padding: var(--padding-tiny);
+    border-radius: var(--border-radius-circle);
 }
-select-pill-remove::before {
+.select-pill-remove:hover {
+    background: var(--select-option-pill-color-hover);
+}
+.select-pill-remove::after {
     font-family: var(--icon-font-family);
     content: var(--icon-x);
+    font-size: var(--font-size-small);
+    color: var(--select-option-pill-text-color);
 }
 
 /* Menu */
@@ -93,9 +90,13 @@ select-pill-remove::before {
     background-color: var(--select-option-hover);
     border: 0.1rem solid var(--select-option-border-color-hover);
 }
-.select-option.active {
+.select-option.selected {
     background-color: var(--select-option-active);
     border: 0.1rem solid var(--select-option-border-color-active);
+}
+.select-option.selected:hover {
+    background-color: hsl( from var(--select-option-active) h s l / 60%);
+    border: 0.1rem solid hsl( from var(--select-option-border-color-active) h s l / 80%);
 }
 .select-option[aria-disabled="true"],
 .select-option.disabled {

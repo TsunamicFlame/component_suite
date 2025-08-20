@@ -49,6 +49,14 @@ export const SelectManager = (() => {
         if (nativeSelect) {
             state.hiddenSelect = nativeSelect;
             state.allOptions = [];
+            // if select is multiple, set multi attribute
+            if (nativeSelect.multiple) {
+                state.mode = "multi";
+            }
+            // if required, set required attribute
+            if (nativeSelect.required) {
+                state.required = true;
+            }
             Array.from(nativeSelect.children).forEach(node => {
                 if (node.tagName.toLowerCase() === "optgroup") {
                     const groupLabel = node.label;
@@ -73,7 +81,18 @@ export const SelectManager = (() => {
         // else if config.options povided (JSON source)
         else if (config.options && Array.isArray(config.options)) {
             state.hiddenSelect = document.createElement("select");
-            state.hiddenSelect.style.display = "none";
+            // if select is multi, set multiple attribute
+            if (state.mode === "multi") {
+                state.hiddenSelect.multiple = true;
+            }
+            // set name and id for form submission
+            state.hiddenSelect.name = config.name || state.id;
+            state.hiddenSelect.id = config.id || state.id + "_hidden";
+            // if required, set required attribute
+            if (state.required) {
+                state.hiddenSelect.required = true;
+            }
+            /* state.hiddenSelect.style.display = "none"; */ // native selects are hidden by CSS
             state.root.appendChild(state.hiddenSelect);
             config.options.forEach(option => {
                 state.allOptions.push(option);
@@ -193,6 +212,9 @@ export const SelectManager = (() => {
             input.textContent = state.filterable ? "Select an option..." : "No selection";
         }
 
+        // attach input to container before checking if flat to ensure input displays above menu
+        container.appendChild(input);
+
         // flat version renders the menu inline
         if (state.type === "flat") {
             const menu = document.createElement("div");
@@ -237,8 +259,7 @@ export const SelectManager = (() => {
             container.appendChild(menu);
         }
 
-        //attach input and container
-        container.appendChild(input);
+        //attach container to the root
         state.root.appendChild(container);
 
         // store references
@@ -252,9 +273,9 @@ export const SelectManager = (() => {
         // open menu on click
         state.inputElement.addEventListener("click", () => {
             if (state.type === "dropdown") {
-                openDropdownType(state);
-            } else {
-                toggleFlatMenu(state);
+                openDropdownType(state); // mount via dropdown manager
+            } else if (state.type === "flat") {
+                // do nothing, menu is already inline via renderContainer
             }
         });
         
@@ -286,16 +307,10 @@ export const SelectManager = (() => {
             }
         });
 
-        // outside click for flat version
-        if (state.type === "flat") {
-            ClickHandlers.onClickOutside([state.root], () => closeFlatMenu(state));
-        }
-
         // for keyboard nav
         state.inputElement.addEventListener("keydown", e => {
             if (!state.open && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
                 if (state.type === "dropdown") openDropdownType(state);
-                else toggleFlatMenu(state);
                 e.preventDefault();
                 return;
             }
@@ -312,7 +327,6 @@ export const SelectManager = (() => {
                 e.preventDefault();
             } else if (e.key === "Escape") {
                 if (state.type === "dropdown") DropdownManager.closeDropdown(state.inputElement);
-                else closeFlatMenu(state);
                 e.preventDefault()
             } else if (e.key === "Backspace" && state.mode === "multi" && state.inputElement.value === "") {
                 //remove last chip
@@ -342,25 +356,6 @@ export const SelectManager = (() => {
         state.containerElement.setAttribute("aria-expanded", "true");
     }
 
-    function toggleFlatMenu(state) { // for flat type: inline menu
-        if (state.open) {
-            closeFlatMenu(state);
-        } else {
-            const menu = buildMenu(state);
-            state.root.appendChild(menu);
-            state.menuElement = menu;
-            state.open = true;
-            state.containerElement.setAttribute("aria-expanded", "true");
-        }
-    }
-
-    function closeFlatMenu(state) {
-        if (state.menuElement) state.menuElement.remove();
-        state.menuElement = null;
-        state.open = false;
-        state.containerElement.setAttribute("aria-expanded", "false");
-    }
-
     function filterOptions(state) {
         const term = state.filter.trim().toLowerCase();
         if (!term) {
@@ -388,7 +383,7 @@ export const SelectManager = (() => {
         state.groupedOptions.forEach(group => {
             if (group.label) {
                 const groupElement = document.createElement("div");
-                groupElement.className = "select-group";
+                groupElement.className = "select-group-label";
                 groupElement.textContent = group.label;
                 menu.appendChild(groupElement);
             }
@@ -404,6 +399,10 @@ export const SelectManager = (() => {
                         handleOptionSelect(state, option);
                     });
                 }
+                // check for active options
+                if (state.selected.some(o => o.value === option.value)) {
+                    optionElement.classList.add("selected");
+                }
                 menu.appendChild(optionElement);
             });
         });
@@ -417,8 +416,6 @@ export const SelectManager = (() => {
             syncToHiddenSelect(state);
             if (state.type === "dropdown") {
                 DropdownManager.closeDropdown(state.inputElement);
-            } else {
-                closeFlatMenu(state);
             }
         } else { // multi
             const exists = state.selected.find(opt => opt.value === option.value);

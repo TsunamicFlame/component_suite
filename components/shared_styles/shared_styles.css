@@ -274,9 +274,13 @@ within that element a specific way.
     --input-border-color: hsl(from var(--accent-color) h s calc(l + 35));
     --input-border-color-active: hsl(from var(--primary-color) h s calc(l + 20));
     --select-group-bg: hsl(from var(--accent-color) h s calc(l + 40));
-    --select-option-active: hsl(from var(--primary-color) h s calc(l + 40));
+    --select-option-hover: hsl(from var(--primary-color) h s calc(l + 40));
+    --select-option-active: hsl(from var(--primary-color) h s calc(l + 30));
+    --select-option-border-color-hover: hsl(from var(--primary-color) h s calc(l + 30));
     --select-option-border-color-active: hsl(from var(--primary-color) h s calc(l + 30));
-    
+    --select-option-pill-color: hsl(from var(--primary-color) h s calc(l + 10));
+    --select-option-pill-color-hover: hsl(from var(--primary-color) h s calc(l + 20));
+    --select-option-pill-text-color: hsl(from var(--background-color) h s calc(l + 40));
 
     /* Element Colors */
     /* - Card Colors */
@@ -415,9 +419,13 @@ within that element a specific way.
     --input-border-color: hsl(from var(--accent-color) h s calc(l + 5));
     --input-border-color-active: hsl(from var(--primary-color) h s calc(l + 5));
     --select-group-bg: hsl(from var(--accent-color) h s calc(l - 15));
+    --select-option-hover: hsl(from var(--primary-color) h s calc(l - 20));
     --select-option-active: hsl(from var(--primary-color) h s calc(l - 15));
-    --select-option-border-color-active: hsl(from var(--primary-color) h s calc(l - 5));
-
+    --select-option-border-color-hover: hsl(from var(--primary-color) h s calc(l - 10));
+    --select-option-border-color-active: hsl(from var(--primary-color) h s calc(l - 15));
+    --select-option-pill-color: hsl(from var(--primary-color) h s calc(l - 5));
+    --select-option-pill-color-hover: hsl(from var(--primary-color) h s calc(l - 10));
+    --select-option-pill-text-color: hsl(from var(--background-color) h s calc(l + 40));
 
     /* Element Colors */
     /* - Card Colors */
