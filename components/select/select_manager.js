@@ -118,62 +118,15 @@ export const SelectManager = (() => {
             options: options
         }));
     }
-/* old version
+
     function renderContainer(state) {
-        // clear existing UI except native select
-        Array.from(state.root.children).forEach(child => {
-            if (child.tagName.toLowerCase() !== "select") child.remove();
-        });
+        /*
+        Renders the select UI: input box (with pills for multi-select), dropdown arrow,
+        and flat menu if applicable. Does NOT directly render dropdown menus for dropdown type.
+        All click/keyboard handlers are attached here.
+        This function should be called whenever the select state changes.
+        */
 
-        const container = document.createElement("div");
-        container.className = "select-container";
-        container.setAttribute("role", "combobox");
-        container.setAttribute("aria-haspopup", "listbox");
-        container.setAttribute("aria-expanded", "false");
-
-        // inputs (acts as trigger for dropdown type)
-        const input = document.createElement("input");
-        input.type = "text";
-        input.className = "select-input";
-        input.readOnly = !state.filterable;
-        container.appendChild(input);
-
-        // arrow for dropdown type
-        if (state.type === "dropdown") {
-            const arrow = document.createElement("span");
-            arrow.className = "select-arrow";
-            container.appendChild(arrow);
-        }
-
-        // chips for multi
-        if (state.mode === "multi") {
-            const chipsDiv = document.createElement("div");
-            chipsDiv.className = "select-chips";
-            state.selected.forEach(selection => {
-                const chip = document.createElement("span");
-                chip.className = "select-chip";
-                chip.textContent = selection.label;
-                const removeBtn = document.createElement("button");
-                removeBtn.type = "button";
-                removeBtn.className = "select-chip-remove";
-                removeBtn.innerHTML = "&times;";
-                removeBtn.addEventListener("click", () => {
-                    state.selected = state.selected.filter(s => s.value !== selection.value);
-                    syncToHiddenSelect(state);
-                    renderContainer(state); // render UI
-                });
-                chip.appendChild(removeBtn);
-                chipsDiv.appendChild(chip);
-            });
-            container.appendChild(chipsDiv);
-        }
-
-        state.root.appendChild(container);
-        state.containerElement = container;
-        state.inputElement = input;
-    }
- */
-    function renderContainer(state) {
         //remove old container if exists
         if (state.containerElement) {
             state.containerElement.remove();
@@ -182,8 +135,12 @@ export const SelectManager = (() => {
         // container wraps the whole select UI
         const container = document.createElement("div");
         container.className = "select-container " + state.type; // "dropdown" | "flat"
+        container.setAttribute("role", "combobox");
+        container.setAttribute("aria-haspopup", "listbox");
+        container.setAttribute("aria-expanded", "false");
+        container.setAttribute("aria-required", state.required);
 
-        // input area (show pills for multi, text for single)
+        // input area (show pills for multi, text for single) (also acts as trigger for dropdowns)
         const input = document.createElement("div");
         input.className = "select-input";
         input.tabIndex = 0; // make it focusable
@@ -200,7 +157,7 @@ export const SelectManager = (() => {
                     e.stopPropagation();
                     state.selected = state.selected.filter(o => o.value !== option.value);
                     syncToHiddenSelect(state);
-                    renderContainer(state); // re-render to update UI
+                    renderContainer(state); // re-render UI to reflect changes
                 };
                 pill.appendChild(remove);
                 input.appendChild(pill);
@@ -209,76 +166,51 @@ export const SelectManager = (() => {
             // single select, show the selected label
             input.textContent = state.selected[0].label;
         } else {
+            // placeholder for empty single input
             input.textContent = state.filterable ? "Select an option..." : "No selection";
         }
 
         // attach input to container before checking if flat to ensure input displays above menu
         container.appendChild(input);
 
+        // add dropdown arrow if dropdown type
+        if (state.type === "dropdown") {
+            const arrow = document.createElement("span");
+            arrow.className = "select-arrow";
+            input.appendChild(arrow);
+        }
+
         // flat version renders the menu inline
         if (state.type === "flat") {
-            const menu = document.createElement("div");
-            menu.className = "select-menu flat";
-            state.groupedOptions.forEach(group => {
-                if (group.label) {
-                    const groupLabel = document.createElement("div");
-                    groupLabel.className = "select-group-label";
-                    groupLabel.textContent = group.label;
-                    menu.appendChild(groupLabel);
-                }
-                group.options.forEach(option => {
-                    const optionDiv = document.createElement("div");
-                    optionDiv.className = "select-option";
-                    optionDiv.textContent = option.label;
-                    optionDiv.setAttribute("role", "option");
-                    if (option.disabled) {
-                        optionDiv.setAttribute("aria-disabled", "true");
-                        optionDiv.classList.add("disabled");
-                    }
-                    if (state.selected.some(o => o.value === option.value)) {
-                        optionDiv.classList.add("selected");
-                    }
-                    optionDiv.addEventListener("click", () => {
-                        if (option.disabled) return; // ignore disabled options
-                        if (state.mode === "multi") {
-                            //toggle selection
-                            if (state.selected.some(o => o.value === option.value)) {
-                                state.selected = state.selected.filter(o => o.value !== option.value);
-                            } else {
-                                state.selected.push(option);
-                            }
-                        } else {
-                            state.selected = [option]; // single select
-                        }
-                        syncToHiddenSelect(state);
-                        renderContainer(state); // re-render to update UI
-                    });
-                    menu.appendChild(optionDiv);
-                });
-            });
+            const menu = buildMenu(state);
             container.appendChild(menu);
         }
 
         //attach container to the root
         state.root.appendChild(container);
 
-        // store references
+        // store references for later use
         state.containerElement = container;
         state.inputElement = input;
-        state.inputElement.setAttribute("role", "combobox");
 
+        // attach handlers
+        attachHandlers(state);
     }
 
     function attachHandlers(state) {
-        // open menu on click
+        /*
+        Attaches event handlers for input/clikcs/keyboard based on select type.
+        Handles opening the dropdown menu (via DropdownManager) for dropdown type.
+        Handles keyboard navigation and filtering if neccessary.
+        */
+
+        // for dropdown: clicking the input opens the dropdown
         state.inputElement.addEventListener("click", () => {
             if (state.type === "dropdown") {
                 openDropdownType(state); // mount via dropdown manager
-            } else if (state.type === "flat") {
-                // do nothing, menu is already inline via renderContainer
             }
         });
-        
+
         // filtering
         state.inputElement.addEventListener("click", () => {
             if (state.filterable) {
@@ -341,8 +273,14 @@ export const SelectManager = (() => {
     }
 
     function openDropdownType(state) {
-        if (state.open) return;
-        const menu = buildMenu(state);
+        /*
+        For dropdown selects ONLY.
+        This function builds the menu, attaches handlers, then hands off to DropdownManager
+        to mount the menu as a floating portal, positiion it, and handle closing.
+        */
+
+        if (state.open) return; // prevent double opening
+        const menu = buildMenu(state); // build AND attach handlers FIRST!
         state.menuElement = menu;
         // mount via dropdown manager
         DropdownManager.openDropdown(state.inputElement, {
@@ -376,10 +314,18 @@ export const SelectManager = (() => {
     }
 
     function buildMenu(state) {
+        /*
+        Builds the menu DOM (options list) for either dropdown or flat type.
+        Returns a DOM node with all options and handlers attached.
+        This function should NEVER insert the menu into the DOM for dropdowns directly.
+        For dropdowns, the menu is passed to DropdownManager for portal mounting.
+        */
+
         const menu = document.createElement("div");
-        menu.className = "select-menu";
+        menu.className = "select-menu" + (state.type === "flat" ? " flat" : " dropdown");
         menu.setAttribute("role", "listbox");
 
+        // grouped or ungrouped options
         state.groupedOptions.forEach(group => {
             if (group.label) {
                 const groupElement = document.createElement("div");
@@ -392,16 +338,22 @@ export const SelectManager = (() => {
                 optionElement.className = "select-option";
                 optionElement.textContent = option.label;
                 optionElement.setAttribute("role", "option");
-                if (option.disabled) {
-                    optionElement.setAttribute("aria-disabled", "true");
-                } else {
-                    optionElement.addEventListener("click", () => {
-                        handleOptionSelect(state, option);
-                    });
-                }
-                // check for active options
+
+                // mark as selected if option is chosen
                 if (state.selected.some(o => o.value === option.value)) {
                     optionElement.classList.add("selected");
+                }
+
+                // mark as disabled if option is disabled
+                if (option.disabled) {
+                    optionElement.setAttribute("aria-disabled", "true");
+                    optionElement.classList.add("disabled");
+                } else {
+                    // click handler for selecting option
+                    optionElement.addEventListener("click", e => {
+                        e.stopPropagation(); // prevent closing dropdown on click
+                        handleOptionSelect(state, option);
+                    })
                 }
                 menu.appendChild(optionElement);
             });
@@ -411,7 +363,11 @@ export const SelectManager = (() => {
     }
 
     function handleOptionSelect(state, option) {
-        if (state.mode === "single") {
+        /*
+        Handles the logic for selecting an optiion (single or multi).
+        For dropdowns, closes the dropdown after selection.
+        */
+/*         if (state.mode === "single") {
             state.selected = [option];
             syncToHiddenSelect(state);
             if (state.type === "dropdown") {
@@ -426,10 +382,38 @@ export const SelectManager = (() => {
                 state.selected.push(option);
             }
             syncToHiddenSelect(state);
+        } */
+        if (state.mode === "single") {
+            // if already selected, allow deselect
+            if (state.selected.length === 1 && state.selected[0].value === option.value) {
+                state.selected = [];
+            } else {
+                state.selected = [option];
+            }
+            syncToHiddenSelect(state); // update hidden select with new selection
+            if (state.type === "dropdown") {
+                DropdownManager.closeDropdown(state.inputElement);
+            }
+            renderContainer(state); // re-render to update UI
+        } else {
+            // multi-select: toggle selection
+            const exists = state.selected.find(opt => opt.value === option.value);
+            if (exists) {
+                state.selected = state.selected.filter(opt => opt.value !== option.value);
+            } else {
+                state.selected.push(option);
+            }
+            syncToHiddenSelect(state); // update hidden select with new selection
+            renderContainer(state); // re-render to update UI
         }
+    
     }
 
     function syncToHiddenSelect(state) {
+        /*
+        Syncronizes the hidden <select> element for form submissions.
+        Ensure the DOM <select> reflects the current selected option(s).
+        */
         if (!state.hiddenSelect) return;
         const selectedValues = state.selected.map(selected => selected.value);
         Array.from(state.hiddenSelect.options).forEach(option => {

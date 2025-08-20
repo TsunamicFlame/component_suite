@@ -2,7 +2,7 @@
 select { display: none; }
 
 /* Container */
-.select-container flat {
+.select-container {
     display: block;
 }
 
@@ -22,7 +22,12 @@ select { display: none; }
 }
 
 /* Dropdown arrow */
-/* .select-arrow */
+.select-arrow::after {
+    font-family: var(--icon-font-family);
+    content: var(--icon-chevron-down);
+    font-size: var(--font-size-small);
+    color: var(--input-text);
+}
 
 .select-pill {
     display: inline-flex;
