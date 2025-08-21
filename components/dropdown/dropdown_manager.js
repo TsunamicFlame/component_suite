@@ -47,7 +47,7 @@ export const DropdownManager = (() => {
             const triggerRect = triggerButton.getBoundingClientRect();
             const elementSize = { width: dropdownElement.offsetWidth, height: dropdownElement.offsetHeight };
             const prefferedMode = triggerButton.dataset.dropdown_mode || 'right';
-            const prefferedvertical = 'down'; // could set as attribute if need.
+            const prefferedVertical = 'down'; // could set as attribute if need.
 
             // find ancestor dropdown rects (rectangles)
             const ancestorRects = getAncestorDropdownRects(triggerButton, openDropdowns);
@@ -56,7 +56,7 @@ export const DropdownManager = (() => {
                 triggerRect,
                 elementSize,
                 prefferedMode,
-                prefferedvertical,
+                prefferedVertical,
                 ancestorRects // pass as extra argument
             );
 

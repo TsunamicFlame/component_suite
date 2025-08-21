@@ -3,6 +3,7 @@ import { PortalManager } from "../shared_utility/portal_manager.js";
 import { TemplateLoader } from "../shared_utility/template_loader.js";
 import { ClickHandlers } from '../shared_utility/click_handlers.js';
 import { PositionUtility } from '../shared_utility/position_utils.js';
+import { ScrollObserver } from "../shared_utility/scroll_observer.js";
 
 // imports from dropdowns
 import { DropdownManager } from '../dropdown/dropdown_manager.js';
@@ -207,7 +208,7 @@ export const SelectManager = (() => {
         // for dropdown: clicking the input opens the dropdown
         state.inputElement.addEventListener("click", () => {
             if (state.type === "dropdown") {
-                openDropdownType(state); // mount via dropdown manager
+                openDropdownMenu(state); // mount via dropdown manager
             }
         });
 
@@ -367,22 +368,7 @@ export const SelectManager = (() => {
         Handles the logic for selecting an optiion (single or multi).
         For dropdowns, closes the dropdown after selection.
         */
-/*         if (state.mode === "single") {
-            state.selected = [option];
-            syncToHiddenSelect(state);
-            if (state.type === "dropdown") {
-                DropdownManager.closeDropdown(state.inputElement);
-            }
-        } else { // multi
-            const exists = state.selected.find(opt => opt.value === option.value);
-            if (exists) {
-                state.selected = state.selected.filter(opt => opt.value !== option.value);
-                renderContainer(state);
-            } else {
-                state.selected.push(option);
-            }
-            syncToHiddenSelect(state);
-        } */
+
         if (state.mode === "single") {
             // if already selected, allow deselect
             if (state.selected.length === 1 && state.selected[0].value === option.value) {
@@ -406,7 +392,6 @@ export const SelectManager = (() => {
             syncToHiddenSelect(state); // update hidden select with new selection
             renderContainer(state); // re-render to update UI
         }
-    
     }
 
     function syncToHiddenSelect(state) {
@@ -429,6 +414,100 @@ export const SelectManager = (() => {
             option.classList.toggle("active", index === state.activeIndex);
             if (index === state.activeIndex) option.scrollIntoView({ block: "nearest" });
         });
+    }
+
+    function openDropdownMenu(state) {
+        /*
+        This function is used to display the dropdown menus.
+        */
+
+        // build menu DOM with handlers
+        const menu = buildMenu(state);
+
+        // set width of menu to match input
+        menu.style.width = `${state.inputElement.offsetWidth}px`;
+
+        // if already open, just return
+        let openDropdowns = []; // array of open dropdowns
+
+        if (state.id in openDropdowns) {
+            return;
+        }
+
+        openDropdowns.push(state.id);
+
+        // mount menu to portal
+        PortalManager.mountToLayer(menu, 'dropdowns_portal');
+
+/*         // calculate and set position
+        const triggerRect = state.inputElement.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        const { left, top } = PositionUtility.calculatePosition(
+            triggerRect,
+            { width: menuRect.width, height: menuRect.height },
+            "right",
+            "down"
+        );
+        menu.style.position = "absolute";
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+
+        // setup outside click handler
+        const cleanup = ClickHandlers.onClickOutside([menu, state.inputElement], () => {
+            closeDropdownMenu(menu, cleanup);
+        });
+
+        // store cleanup to call on close
+        state.dropdownCleanup = () => closeDropdownMenu(menu, cleanup); */
+
+
+        // calculate and set position
+        const updatePosition = () => {
+            const triggerRect = state.inputElement.getBoundingClientRect();
+            const menuRect = menu.getBoundingClientRect();
+            const elementSize = { width: menu.offsetWidth, height: menu.offsetHeight };
+            const prefferedMode = 'right';
+            const prefferedVertical = 'down';
+
+            const { top, left, mode, vertical } = PositionUtility.calculatePosition(
+                triggerRect,
+                elementSize,
+                prefferedMode,
+                prefferedVertical
+            );
+
+            menu.style.top = `${top}px`;
+            menu.style.left = `${left}px`;
+        }
+        updatePosition();
+
+        // needed for closing on scroll out of view
+        const closeDropdownMenuFn = () => {
+            closeDropdownMenu(menu);
+        };
+
+        // reposition on scroll/resize
+        const cleanupScroll = ScrollObserver.observeScrollPosition(updatePosition);
+
+        // close if trigger not visible
+        const cleanupVisibility = ScrollObserver.observeVisibility(state.inputElement, closeDropdownMenuFn)
+
+        // close on outside click
+        const cleanupOutsideClick = ClickHandlers.onClickOutside([menu, state.inputElement], () => {
+            closeDropdownMenu(menu, menu.dropdownMenuCleanup);
+        });
+
+        // Store cleanup so we can call it later
+        menu.dropdownMenuCleanup = () => {
+            cleanupOutsideClick(); // Remove outside listeners
+            cleanupScroll();
+            cleanupVisibility();
+        };
+    }
+
+    function closeDropdownMenu(menu) {
+        PortalManager.unmountFromLayer(menu);
+        menu.dropdownMenuCleanup(); // remove outside click handler
     }
 
     return { initializeSelects };
